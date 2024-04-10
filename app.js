@@ -57,7 +57,7 @@ function deleteNote(noteToDelete) {
     });
 }
 
-// Einrichten der CLI für Benutzerinteraktionen
+// Eingabe für Benutzerinteraktionen
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
