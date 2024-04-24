@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notizverwaltung</title>
+</head>
+<body>
+    <h1>Notizverwaltung</h1>
+    <p>Was möchten Sie tun?</p>
+    <button onclick="showAddForm()">Notiz hinzufügen</button>
+    <button onclick="showNotes()">Notizen anzeigen</button>
+    <button onclick="showDeleteForm()">Notiz löschen</button>
+
+    <div id="addForm" style="display:none;">
+        <input type="text" id="noteToAdd" placeholder="Notiz eingeben">
+        <button onclick="addNote()">Hinzufügen</button>
+    </div>
+
+    <div id="deleteForm" style="display:none;">
+        <input type="text" id="noteToDelete" placeholder="Notiz eingeben">
+        <button onclick="deleteNote()">Löschen</button>
+    </div>
+
+    <div id="noteList" style="display:none;">
+        <h2>Notizen:</h2>
+        <ul id="notes"></ul>
+    </div>
+
+    <script>
+        function showAddForm() {
+            document.getElementById('addForm').style.display = 'block';
+            document.getElementById('deleteForm').style.display = 'none';
+            document.getElementById('noteList').style.display = 'none';
+        }
+
+        function showNotes() {
+            fetch('/notes.txt')
+                .then(response => response.text())
+                .then(data => {
+                    const notes = data.split('\n').filter(note => note.trim() !== '');
+                    const notesList = document.getElementById('notes');
+                    notesList.innerHTML = '';
+                    notes.forEach(note => {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = note;
+                        notesList.appendChild(listItem);
+                    });
+                });
+            document.getElementById('addForm').style.display = 'none';
+            document.getElementById('deleteForm').style.display = 'none';
+            document.getElementById('noteList').style.display = 'block';
+        }
+
+        function showDeleteForm() {
+            document.getElementById('addForm').style.display = 'none';
+            document.getElementById('deleteForm').style.display = 'block';
+            document.getElementById('noteList').style.display = 'none';
+        }
+
+        function addNote() {
+            const note = document.getElementById('noteToAdd').value;
+            fetch('/add?note=' + note)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Fehler beim Hinzufügen der Notiz');
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    alert(data);
+                });
+        }
+
+        function deleteNote() {
+            const note = document.getElementById('noteToDelete').value;
+            fetch('/delete?note=' + note)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Fehler beim Löschen der Notiz');
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    alert(data);
+                });
+        }
+    </script>
+</body>
+</html>
